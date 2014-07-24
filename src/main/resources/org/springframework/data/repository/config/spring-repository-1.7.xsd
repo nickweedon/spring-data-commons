@@ -85,11 +85,6 @@
 	<!-- JSON (Jackson) initializer -->
 	
 	<xsd:element name="jackson-populator">
-		<xsd:annotation>
-			<xsd:documentation>
-				Deprecated, use jackson2-populator instead.
-			</xsd:documentation>
-		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:complexContent>
 				<xsd:extension base="populator">

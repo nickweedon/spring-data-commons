@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.mvc.UriComponentsContributor;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
@@ -77,35 +76,6 @@ public class HateoasPageableHandlerMethodArgumentResolverUnitTests extends
 		assertUriStringFor(new PageRequest(0, 200), "page=0&size=100");
 	}
 
-	/**
-	 * @see DATACMNS-418
-	 */
-	@Test
-	public void appendsTemplateVariablesCorrectly() {
-
-		assertTemplateEnrichment("/foo", "{?page,size,sort}");
-		assertTemplateEnrichment("/foo?bar=1", "{&page,size,sort}");
-		assertTemplateEnrichment("/foo?page=1", "{&size,sort}");
-		assertTemplateEnrichment("/foo?page=1&size=10", "{&sort}");
-		assertTemplateEnrichment("/foo?page=1&sort=foo,asc", "{&size}");
-		assertTemplateEnrichment("/foo?page=1&size=10&sort=foo,asc", "");
-	}
-
-	/**
-	 * @see DATACMNS-418
-	 */
-	@Test
-	public void returnsCustomizedTemplateVariables() {
-
-		UriComponents uriComponents = UriComponentsBuilder.fromPath("/foo").build();
-
-		HateoasPageableHandlerMethodArgumentResolver resolver = getResolver();
-		resolver.setPageParameterName("foo");
-		String variables = resolver.getPaginationTemplateVariables(null, uriComponents).toString();
-
-		assertThat(variables, is("{?foo,size,sort}"));
-	}
-
 	@Override
 	protected HateoasPageableHandlerMethodArgumentResolver getResolver() {
 
@@ -122,13 +92,5 @@ public class HateoasPageableHandlerMethodArgumentResolverUnitTests extends
 		getResolver().enhance(builder, parameter, pageable);
 
 		assertThat(builder.build().toUriString(), endsWith(expected));
-	}
-
-	private void assertTemplateEnrichment(String baseUri, String expected) {
-
-		UriComponents uriComponents = UriComponentsBuilder.fromUriString(baseUri).build();
-
-		HateoasPageableHandlerMethodArgumentResolver resolver = getResolver();
-		assertThat(resolver.getPaginationTemplateVariables(null, uriComponents).toString(), is(expected));
 	}
 }

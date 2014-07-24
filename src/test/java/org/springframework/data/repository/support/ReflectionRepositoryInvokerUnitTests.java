@@ -23,8 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.core.CrudInvoker;
+import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.CrudMethods;
 
 /**
@@ -35,7 +34,7 @@ import org.springframework.data.repository.core.CrudMethods;
 @RunWith(MockitoJUnitRunner.class)
 public class ReflectionRepositoryInvokerUnitTests {
 
-	@Mock CrudRepository<Object, Serializable> repo;
+	@Mock Repository<Object, Serializable> repo;
 	@Mock CrudMethods methods;
 
 	@Test
@@ -72,38 +71,5 @@ public class ReflectionRepositoryInvokerUnitTests {
 		when(methods.hasSaveMethod()).thenReturn(false);
 
 		new ReflectionRepositoryInvoker<Object>(repo, methods);
-	}
-
-	/**
-	 * @see DATACMNS-410
-	 */
-	@Test
-	public void invokesFindOneCorrectly() throws Exception {
-
-		when(methods.hasFindOneMethod()).thenReturn(true);
-		when(methods.hasSaveMethod()).thenReturn(true);
-		when(methods.getFindOneMethod()).thenReturn(CrudRepository.class.getMethod("findOne", Serializable.class));
-
-		CrudInvoker<Object> invoker = new ReflectionRepositoryInvoker<Object>(repo, methods);
-		invoker.invokeFindOne(1L);
-
-		verify(repo, times(1)).findOne(1L);
-	}
-
-	/**
-	 * @see DATACMNS-410
-	 */
-	@Test
-	public void invokesSaveCorrectly() throws Exception {
-
-		when(methods.hasFindOneMethod()).thenReturn(true);
-		when(methods.hasSaveMethod()).thenReturn(true);
-		when(methods.getSaveMethod()).thenReturn(CrudRepository.class.getMethod("save", Object.class));
-
-		CrudInvoker<Object> invoker = new ReflectionRepositoryInvoker<Object>(repo, methods);
-		Object object = new Object();
-		invoker.invokeSave(object);
-
-		verify(repo, times(1)).save(object);
 	}
 }

@@ -79,9 +79,4 @@ public final class DummyRepositoryInformation implements RepositoryInformation {
 	public CrudMethods getCrudMethods() {
 		return new DefaultCrudMethods(this);
 	}
-
-	@Override
-	public boolean isPagingRepository() {
-		return false;
-	}
 }

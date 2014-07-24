@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,54 +15,25 @@
  */
 package org.springframework.data.web;
 
-import static org.springframework.hateoas.TemplateVariable.VariableType.*;
-
 import java.util.List;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.Sort;
-import org.springframework.hateoas.TemplateVariable;
-import org.springframework.hateoas.TemplateVariable.VariableType;
-import org.springframework.hateoas.TemplateVariables;
 import org.springframework.hateoas.mvc.UriComponentsContributor;
 import org.springframework.util.Assert;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Extension of {@link SortHandlerMethodArgumentResolver} that also supports enhancing URIs using Spring HATEOAS
  * support.
- * 
+ *
  * @since 1.6
  * @author Oliver Gierke
  * @author Thomas Darimont
  * @author Nick Williams
  */
-public class HateoasSortHandlerMethodArgumentResolver extends SortHandlerMethodArgumentResolver implements
-		UriComponentsContributor {
-
-	/**
-	 * Returns the tempalte variables for the sort parameter.
-	 * 
-	 * @param parameter must not be {@literal null}.
-	 * @return
-	 * @since 1.7
-	 */
-	public TemplateVariables getSortTemplateVariables(MethodParameter parameter, UriComponents template) {
-
-		String sortParameter = getSortParameter(parameter);
-		MultiValueMap<String, String> queryParameters = template.getQueryParams();
-		boolean append = !queryParameters.isEmpty();
-
-		if (queryParameters.containsKey(sortParameter)) {
-			return TemplateVariables.NONE;
-		}
-
-		String description = String.format("pagination.%s.description", sortParameter);
-		VariableType type = append ? REQUEST_PARAM_CONTINUED : REQUEST_PARAM;
-		return new TemplateVariables(new TemplateVariable(sortParameter, type, description));
-	}
+public class HateoasSortHandlerMethodArgumentResolver extends SortHandlerMethodArgumentResolver
+		implements UriComponentsContributor {
 
 	/*
 	 * (non-Javadoc)
@@ -76,22 +47,19 @@ public class HateoasSortHandlerMethodArgumentResolver extends SortHandlerMethodA
 		}
 
 		Sort sort = (Sort) value;
-		String sortParameter = getSortParameter(parameter);
 
 		if (legacyMode) {
 
 			List<String> expressions = legacyFoldExpressions(sort);
 			Assert.isTrue(expressions.size() == 2,
 					String.format("Expected 2 sort expressions (fields, direction) but got %d!", expressions.size()));
-			builder.replaceQueryParam(sortParameter, expressions.get(0));
-			builder.replaceQueryParam(getLegacyDirectionParameter(parameter), expressions.get(1));
+			builder.queryParam(getSortParameter(parameter), expressions.get(0));
+			builder.queryParam(getLegacyDirectionParameter(parameter), expressions.get(1));
 
 		} else {
 
-			builder.replaceQueryParam(sortParameter);
-
 			for (String expression : foldIntoExpressions(sort)) {
-				builder.queryParam(sortParameter, expression);
+				builder.queryParam(getSortParameter(parameter), expression);
 			}
 		}
 	}

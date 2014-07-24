@@ -18,9 +18,6 @@ package org.springframework.data.auditing;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,13 +37,10 @@ public class ReflectionAuditingBeanWrapperUnitTests {
 	AnnotatedUser user;
 	AuditableBeanWrapper wrapper;
 
-	Calendar calendar = new GregorianCalendar();
-	DateTime time = new DateTime(calendar);
+	DateTime time = new DateTime();
 
 	@Before
 	public void setUp() {
-
-		assertThat(time, is(new DateTime(calendar)));
 
 		this.user = new AnnotatedUser();
 		this.wrapper = new ReflectionAuditingBeanWrapper(user);
@@ -55,14 +49,14 @@ public class ReflectionAuditingBeanWrapperUnitTests {
 	@Test
 	public void setsDateTimeFieldCorrectly() {
 
-		wrapper.setCreatedDate(calendar);
+		wrapper.setCreatedDate(time);
 		assertThat(user.createdDate, is(time));
 	}
 
 	@Test
 	public void setsDateFieldCorrectly() {
 
-		wrapper.setLastModifiedDate(calendar);
+		wrapper.setLastModifiedDate(time);
 		assertThat(user.lastModifiedDate, is(time.toDate()));
 	}
 
@@ -79,10 +73,10 @@ public class ReflectionAuditingBeanWrapperUnitTests {
 		Sample sample = new Sample();
 		AuditableBeanWrapper wrapper = new ReflectionAuditingBeanWrapper(sample);
 
-		wrapper.setCreatedDate(calendar);
+		wrapper.setCreatedDate(time);
 		assertThat(sample.createdDate, is(time.getMillis()));
 
-		wrapper.setLastModifiedDate(calendar);
+		wrapper.setLastModifiedDate(time);
 		assertThat(sample.modifiedDate, is(time.getMillis()));
 	}
 

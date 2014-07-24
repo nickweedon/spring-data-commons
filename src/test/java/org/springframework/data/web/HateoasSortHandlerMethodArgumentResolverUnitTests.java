@@ -19,12 +19,9 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static org.springframework.data.domain.Sort.Direction.*;
 
-import java.net.URI;
-
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.Sort;
-import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
@@ -35,7 +32,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class HateoasSortHandlerMethodArgumentResolverUnitTests extends SortHandlerMethodArgumentResolverUnitTests {
 
 	@Test
-	public void buildsUpRequestParameters() throws Exception {
+	public void buildsUpRequestParameters() {
 
 		assertUriStringFor(SORT, "sort=firstname,lastname,desc");
 		assertUriStringFor(new Sort(ASC, "foo").and(new Sort(DESC, "bar").and(new Sort(ASC, "foobar"))),
@@ -44,33 +41,9 @@ public class HateoasSortHandlerMethodArgumentResolverUnitTests extends SortHandl
 				"sort=foo,bar,asc&sort=foobar,desc");
 	}
 
-	/**
-	 * @see DATACMNS-407
-	 */
-	@Test
-	public void replacesExistingRequestParameters() throws Exception {
-		assertUriStringFor(SORT, "/?sort=firstname,lastname,desc", "/?sort=foo,asc");
-	}
+	private void assertUriStringFor(Sort sort, String expected) {
 
-	/**
-	 * @see DATACMNS-418
-	 */
-	@Test
-	public void returnCorrectTemplateVariables() {
-
-		UriComponents uriComponents = UriComponentsBuilder.fromPath("/").build();
-
-		HateoasSortHandlerMethodArgumentResolver resolver = new HateoasSortHandlerMethodArgumentResolver();
-		assertThat(resolver.getSortTemplateVariables(null, uriComponents).toString(), is("{?sort}"));
-	}
-
-	private void assertUriStringFor(Sort sort, String expected) throws Exception {
-		assertUriStringFor(sort, expected, "/");
-	}
-
-	private void assertUriStringFor(Sort sort, String expected, String baseUri) throws Exception {
-
-		UriComponentsBuilder builder = UriComponentsBuilder.fromUri(new URI(baseUri));
+		UriComponentsBuilder builder = UriComponentsBuilder.fromPath("/");
 		MethodParameter parameter = getParameterOfMethod("supportedMethod");
 
 		new HateoasSortHandlerMethodArgumentResolver().enhance(builder, parameter, sort);

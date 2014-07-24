@@ -243,7 +243,7 @@ public class SortHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 			}
 
 			String[] elements = part.split(delimiter);
-			Direction direction = elements.length == 0 ? null : Direction.fromStringOrNull(elements[elements.length - 1]);
+			Direction direction = Direction.fromStringOrNull(elements[elements.length - 1]);
 
 			for (int i = 0; i < elements.length; i++) {
 
@@ -251,13 +251,7 @@ public class SortHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 					continue;
 				}
 
-				String property = elements[i];
-
-				if (!StringUtils.hasText(property)) {
-					continue;
-				}
-
-				allOrders.add(new Order(direction, property));
+				allOrders.add(new Order(direction, elements[i]));
 			}
 		}
 

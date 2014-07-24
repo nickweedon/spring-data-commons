@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2013 the original author or authors.
+ * Copyright 2011-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,15 +26,13 @@ import org.springframework.util.Assert;
  * {@link RepositoryDefinition} annotation.
  * 
  * @author Oliver Gierke
- * @author Thomas Darimont
  */
 public class AnnotationRepositoryMetadata extends AbstractRepositoryMetadata {
 
 	private static final String NO_ANNOTATION_FOUND = String.format("Interface must be annotated with @%s!",
 			RepositoryDefinition.class.getName());
 
-	private final Class<? extends Serializable> idType;
-	private final Class<?> domainType;
+	private final Class<?> repositoryInterface;
 
 	/**
 	 * Creates a new {@link AnnotationRepositoryMetadata} instance looking up repository types from a
@@ -43,51 +41,34 @@ public class AnnotationRepositoryMetadata extends AbstractRepositoryMetadata {
 	 * @param repositoryInterface must not be {@literal null}.
 	 */
 	public AnnotationRepositoryMetadata(Class<?> repositoryInterface) {
-
 		super(repositoryInterface);
 		Assert.isTrue(repositoryInterface.isAnnotationPresent(RepositoryDefinition.class), NO_ANNOTATION_FOUND);
-
-		this.idType = resolveIdType(repositoryInterface);
-		this.domainType = resolveDomainType(repositoryInterface);
+		this.repositoryInterface = repositoryInterface;
 	}
 
-	/* 
+	/*
 	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.core.RepositoryMetadata#getIdType()
+	 * @see org.springframework.data.repository.support.RepositoryMetadata#getIdClass()
 	 */
-	@Override
 	public Class<? extends Serializable> getIdType() {
-		return this.idType;
+		RepositoryDefinition annotation = repositoryInterface.getAnnotation(RepositoryDefinition.class);
+		return annotation == null ? null : annotation.idClass();
 	}
 
-	/* 
+	/*
 	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.core.RepositoryMetadata#getDomainType()
+	 * @see org.springframework.data.repository.support.RepositoryMetadata#getDomainClass()
 	 */
-	@Override
 	public Class<?> getDomainType() {
-		return this.domainType;
+		RepositoryDefinition annotation = repositoryInterface.getAnnotation(RepositoryDefinition.class);
+		return annotation == null ? null : annotation.domainClass();
 	}
 
-	private Class<? extends Serializable> resolveIdType(Class<?> repositoryInterface) {
-
-		RepositoryDefinition annotation = repositoryInterface.getAnnotation(RepositoryDefinition.class);
-
-		if (annotation == null || annotation.idClass() == null) {
-			throw new IllegalArgumentException(String.format("Could not resolve id type of %s!", repositoryInterface));
-		}
-
-		return annotation.idClass();
-	}
-
-	private Class<?> resolveDomainType(Class<?> repositoryInterface) {
-
-		RepositoryDefinition annotation = repositoryInterface.getAnnotation(RepositoryDefinition.class);
-
-		if (annotation == null || annotation.domainClass() == null) {
-			throw new IllegalArgumentException(String.format("Could not resolve domain type of %s!", repositoryInterface));
-		}
-
-		return annotation.domainClass();
+	/*
+	 * (non-Javadoc)
+	 * @see org.springframework.data.repository.support.RepositoryMetadata#getRepositoryInterface()
+	 */
+	public Class<?> getRepositoryInterface() {
+		return repositoryInterface;
 	}
 }

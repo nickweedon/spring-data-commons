@@ -42,9 +42,8 @@ import org.springframework.util.ClassUtils;
  * Default implementation of {@link RepositoryInformation}.
  * 
  * @author Oliver Gierke
- * @author Thomas Darimont
  */
-class DefaultRepositoryInformation implements RepositoryInformation {
+class DefaultRepositoryInformation extends AbstractRepositoryMetadata implements RepositoryInformation {
 
 	@SuppressWarnings("rawtypes") private static final TypeVariable<Class<Repository>>[] PARAMETERS = Repository.class
 			.getTypeParameters();
@@ -56,6 +55,7 @@ class DefaultRepositoryInformation implements RepositoryInformation {
 	private final RepositoryMetadata metadata;
 	private final Class<?> repositoryBaseClass;
 	private final Class<?> customImplementationClass;
+	private final CrudMethods crudMethods;
 
 	/**
 	 * Creates a new {@link DefaultRepositoryMetadata} for the given repository interface and repository base class.
@@ -67,12 +67,24 @@ class DefaultRepositoryInformation implements RepositoryInformation {
 	public DefaultRepositoryInformation(RepositoryMetadata metadata, Class<?> repositoryBaseClass,
 			Class<?> customImplementationClass) {
 
+		super(metadata.getRepositoryInterface());
+
 		Assert.notNull(metadata);
 		Assert.notNull(repositoryBaseClass);
 
 		this.metadata = metadata;
 		this.repositoryBaseClass = repositoryBaseClass;
 		this.customImplementationClass = customImplementationClass;
+		this.crudMethods = new DefaultCrudMethods(this);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.springframework.data.repository.support.RepositoryMetadata#getRepositoryInterface()
+	 */
+	@Override
+	public Class<?> getRepositoryInterface() {
+		return metadata.getRepositoryInterface();
 	}
 
 	/*
@@ -279,38 +291,11 @@ class DefaultRepositoryInformation implements RepositoryInformation {
 
 	/* 
 	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.core.RepositoryMetadata#getRepositoryInterface()
-	 */
-	@Override
-	public Class<?> getRepositoryInterface() {
-		return metadata.getRepositoryInterface();
-	}
-
-	/* 
-	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.core.RepositoryMetadata#getReturnedDomainClass(java.lang.reflect.Method)
-	 */
-	@Override
-	public Class<?> getReturnedDomainClass(Method method) {
-		return metadata.getReturnedDomainClass(method);
-	}
-
-	/* 
-	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.core.RepositoryMetadata#getCrudMethods()
+	 * @see org.springframework.data.repository.core.RepositoryInformation#getCrudMethods()
 	 */
 	@Override
 	public CrudMethods getCrudMethods() {
-		return metadata.getCrudMethods();
-	}
-
-	/* 
-	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.core.RepositoryMetadata#isPagingRepository()
-	 */
-	@Override
-	public boolean isPagingRepository() {
-		return metadata.isPagingRepository();
+		return crudMethods;
 	}
 
 	/**

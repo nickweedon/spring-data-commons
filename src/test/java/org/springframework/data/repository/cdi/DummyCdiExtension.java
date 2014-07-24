@@ -40,9 +40,7 @@ public class DummyCdiExtension extends CdiRepositoryExtensionSupport {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	void afterBeanDiscovery(@Observes AfterBeanDiscovery afterBeanDiscovery, BeanManager beanManager) {
 		for (Entry<Class<?>, Set<Annotation>> type : getRepositoryTypes()) {
-			DummyCdiRepositoryBean bean = new DummyCdiRepositoryBean(type.getValue(), type.getKey(), beanManager);
-			registerBean(bean);
-			afterBeanDiscovery.addBean(bean);
+			afterBeanDiscovery.addBean(new DummyCdiRepositoryBean(type.getValue(), type.getKey(), beanManager));
 		}
 	}
 

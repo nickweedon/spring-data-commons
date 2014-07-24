@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2013 the original author or authors.
+ * Copyright 2011-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import org.springframework.data.repository.core.RepositoryMetadata;
  * Unit tests for {@link AbstractRepositoryMetadata}.
  * 
  * @author Oliver Gierke
- * @author Thomas Darimont
  */
 public class AbstractRepositoryMetadataUnitTests {
 
@@ -117,6 +116,10 @@ public class AbstractRepositoryMetadataUnitTests {
 		}
 
 		public Class<?> getDomainType() {
+			return null;
+		}
+
+		public Class<?> getRepositoryInterface() {
 			return null;
 		}
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import static org.springframework.web.util.UriComponentsBuilder.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.Link;
@@ -29,8 +28,6 @@ import org.springframework.hateoas.PagedResources.PageMetadata;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.hateoas.ResourceSupport;
-import org.springframework.hateoas.TemplateVariables;
-import org.springframework.hateoas.UriTemplate;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponents;
@@ -144,29 +141,14 @@ public class PagedResourcesAssembler<T> implements ResourceAssembler<Page<T>, Pa
 			foo(resources, page.previousPageable(), uri, Link.REL_PREVIOUS);
 		}
 
-		UriComponents uriComponents = UriComponentsBuilder.fromUriString(uri).build();
-		TemplateVariables variables = pageableResolver.getPaginationTemplateVariables(getMethodParameter(), uriComponents);
-		resources.add(new Link(new UriTemplate(uri, variables), Link.REL_SELF));
-
 		return resources;
 	}
 
 	private void foo(PagedResources<?> resources, Pageable pageable, String uri, String rel) {
 
 		UriComponentsBuilder builder = fromUriString(uri);
-		pageableResolver.enhance(builder, getMethodParameter(), pageable);
+		pageableResolver.enhance(builder, null, pageable);
 		resources.add(new Link(builder.build().toUriString(), rel));
-	}
-
-	/**
-	 * Return the {@link MethodParameter} to be used to potentially qualify the paging and sorting request parameters to.
-	 * Default implementations returns {@literal null}, which means the parameters will not be qualified.
-	 * 
-	 * @return
-	 * @since 1.7
-	 */
-	protected MethodParameter getMethodParameter() {
-		return null;
 	}
 
 	/**
